@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OpenNotes</string>
+    <string name="note_list_toolbar_title">Open Notes</string>
+</resources>
