@@ -44,10 +44,10 @@ public class NotesLocalDataSource implements NotesDataSource {
     }
 
     @Override
-    public void getNote(@NonNull long noteId, @NonNull GetNoteCallBack callBack) {
+    public void getNote(@NonNull String noteId, @NonNull GetNoteCallBack callBack) {
         Note note = realm.where(Note.class).equalTo("mId", noteId).findFirst();
         if (note != null) {
-            callBack.onNoteLoaded(note);
+            callBack.onNoteLoaded(realm.copyFromRealm(note));
         } else {
             callBack.onDataNotAvailable();
         }
@@ -56,16 +56,18 @@ public class NotesLocalDataSource implements NotesDataSource {
     @Override
     public void saveNote(@NonNull Note note) {
         realm.beginTransaction();
-        realm.copyToRealm(note);
+        realm.copyToRealmOrUpdate(note);
         realm.commitTransaction();
     }
 
     @Override
     public void deleteNote(@NonNull Note note) {
+        realm.beginTransaction();
         Note note1 = realm.where(Note.class).equalTo("mId", note.getmId()).findFirst();
         if (note1 != null) {
             note1.deleteFromRealm();
         }
+        realm.commitTransaction();
     }
 
 }

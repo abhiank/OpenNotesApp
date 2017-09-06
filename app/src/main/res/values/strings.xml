@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">OpenNotes</string>
     <string name="note_list_toolbar_title">Open Notes</string>
+    <string name="delete_note_dialog_title">Delete Note</string>
+    <string name="delete_note_dialog_message">Are you sure you want to delete this note?</string>
+    <string name="delete_note_pos_button">Yes</string>
+    <string name="delete_note_negative_button">Cancel</string>
+    <string name="note_removed_success_message">Note Removed!</string>
+    <string name="storage_permission_denied_message">Storage permission was denied</string>
+    <string name="edit_note_title">Edit Note</string>
+    <string name="create_note_title">Create Note</string>
 </resources>

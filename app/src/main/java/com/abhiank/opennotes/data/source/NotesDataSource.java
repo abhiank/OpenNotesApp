@@ -28,7 +28,7 @@ public interface NotesDataSource {
 
     void getAllNotes(@NonNull LoadAllNotesCallback callback);
 
-    void getNote(@NonNull long noteId, @NonNull GetNoteCallBack callBack);
+    void getNote(@NonNull String noteId, @NonNull GetNoteCallBack callBack);
 
     void saveNote(@NonNull Note note);
 

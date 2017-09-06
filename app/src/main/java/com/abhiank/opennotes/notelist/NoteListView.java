@@ -19,4 +19,6 @@ public interface NoteListView {
     void showMessage(String message);
 
     void navigateToAddEditNoteScreen(Note note);
+
+    void noteRemoved(int position);
 }

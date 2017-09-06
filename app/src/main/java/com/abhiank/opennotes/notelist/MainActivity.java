@@ -1,6 +1,8 @@
 package com.abhiank.opennotes.notelist;
 
+import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -106,10 +108,29 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
 
             @Override
             public void onItemDeleteClick(int position) {
-                presenter.onNoteItemRemoved(position);
+                showNoteDeletionDialog(position);
             }
         });
         recyclerView.setAdapter(noteListAdapter);
+    }
+
+    public void showNoteDeletionDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+        builder.setTitle(R.string.delete_note_dialog_title);
+        builder.setMessage(R.string.delete_note_dialog_message);
+        builder.setPositiveButton(R.string.delete_note_pos_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                presenter.onNoteItemRemoveClicked(position);
+            }
+        });
+        builder.setNegativeButton(R.string.delete_note_negative_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -119,7 +140,13 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
 
     @Override
     public void navigateToAddEditNoteScreen(Note note) {
-        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this, note));
+        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this, note.getmId()));
+    }
+
+    @Override
+    public void noteRemoved(int position) {
+        recyclerView.getAdapter().notifyItemRemoved(position);
+        Toast.makeText(MainActivity.this, R.string.note_removed_success_message, Toast.LENGTH_SHORT).show();
     }
 
 }

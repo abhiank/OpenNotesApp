@@ -14,5 +14,5 @@ public interface NoteListPresenter {
 
     void onNoteItemClicked(int position);
 
-    void onNoteItemRemoved(int position);
+    void onNoteItemRemoveClicked(int position);
 }

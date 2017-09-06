@@ -46,7 +46,7 @@ public class NotesRepository implements NotesDataSource {
     }
 
     @Override
-    public void getNote(@NonNull long noteId, @NonNull final GetNoteCallBack callBack) {
+    public void getNote(@NonNull String noteId, @NonNull final GetNoteCallBack callBack) {
         notesLocalDataSource.getNote(noteId, new GetNoteCallBack() {
             @Override
             public void onNoteLoaded(Note note) {

@@ -6,7 +6,6 @@ import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.data.source.NotesDataSource;
 import com.abhiank.opennotes.data.source.NotesRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +16,7 @@ public class NoteListPresenterImpl implements NoteListPresenter {
 
     private NoteListView noteListView;
     private NotesRepository notesRepository;
+    private List<Note> noteList;
 
     public NoteListPresenterImpl(NoteListView noteListView, Context context) {
         this.noteListView = noteListView;
@@ -25,15 +25,11 @@ public class NoteListPresenterImpl implements NoteListPresenter {
 
     @Override
     public void onResume() {
-//        List<Note> notes = new ArrayList<>();
-//        for(int i=0; i<10; i++){
-//            notes.add(new Note("blah", "blah blah"));
-//        }
-
         notesRepository.getAllNotes(new NotesDataSource.LoadAllNotesCallback() {
             @Override
             public void onNotesLoaded(List<Note> notes) {
-                noteListView.setNoteListItems(notes);
+                noteList = notes;
+                noteListView.setNoteListItems(noteList);
             }
 
             @Override
@@ -51,12 +47,14 @@ public class NoteListPresenterImpl implements NoteListPresenter {
 
     @Override
     public void onNoteItemClicked(int position) {
-        noteListView.showMessage("Note " + position + " clicked");
-        noteListView.navigateToAddEditNoteScreen(new Note("a", "b"));
+        noteListView.navigateToAddEditNoteScreen(noteList.get(position));
     }
 
     @Override
-    public void onNoteItemRemoved(int position) {
-        noteListView.showMessage("Note " + position + " removed");
+    public void onNoteItemRemoveClicked(int position) {
+        notesRepository.deleteNote(noteList.get(position));
+        noteList.remove(position);
+        noteListView.noteRemoved(position);
     }
+
 }
