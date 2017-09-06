@@ -14,9 +14,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -35,6 +39,9 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.parceler.Parcels;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -47,6 +54,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     @BindView(R.id.note_edit_text)
     EditText editText;
 
+    private static final String TAG = AddEditNoteActivity.class.getSimpleName();
     private static final int IMAGE_PICKER_INTENT_REQUEST_CODE = 0;
 
     private AddEditNotePresenterImpl presenter;
@@ -87,6 +95,82 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
         getSupportActionBar().setTitle(title);
 
         presenter = new AddEditNotePresenterImpl(AddEditNoteActivity.this, note);
+
+        editText.addTextChangedListener(new ImageSpanDeleteHandler(editText));
+    }
+
+    //https://stackoverflow.com/a/19649371/3090120
+    private static class ImageSpanDeleteHandler implements TextWatcher {
+
+        private final EditText mEditor;
+        private final ArrayList<ImageSpan> mEmoticonsToRemove = new ArrayList<ImageSpan>();
+
+        public ImageSpanDeleteHandler(EditText editor) {
+            // Attach the handler to listen for text changes.
+            mEditor = editor;
+        }
+
+        public void insert(String emoticon, int resource) {
+            // Create the ImageSpan
+            Drawable drawable = mEditor.getResources().getDrawable(resource);
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            ImageSpan span = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+
+            // Get the selected text.
+            int start = mEditor.getSelectionStart();
+            int end = mEditor.getSelectionEnd();
+            Editable message = mEditor.getEditableText();
+
+            // Insert the emoticon.
+            message.replace(start, end, emoticon);
+            message.setSpan(span, start, start + emoticon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence text, int start, int count, int after) {
+            // Check if some text will be removed.
+            if (count > 0) {
+                int end = start + count;
+                Editable message = mEditor.getEditableText();
+                ImageSpan[] list = message.getSpans(start, end, ImageSpan.class);
+
+                for (ImageSpan span : list) {
+                    // Get only the emoticons that are inside of the changed
+                    // region.
+                    int spanStart = message.getSpanStart(span);
+                    int spanEnd = message.getSpanEnd(span);
+                    if ((spanStart < end) && (spanEnd > start)) {
+                        // Add to remove list
+                        mEmoticonsToRemove.add(span);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable text) {
+            Editable message = mEditor.getEditableText();
+
+            // Commit the emoticons to be removed.
+            for (ImageSpan span : mEmoticonsToRemove) {
+                int start = message.getSpanStart(span);
+                int end = message.getSpanEnd(span);
+
+                // Remove the span
+                message.removeSpan(span);
+
+                // Remove the remaining emoticon text.
+                if (start != end) {
+                    message.delete(start, end);
+                }
+            }
+            mEmoticonsToRemove.clear();
+        }
+
+        @Override
+        public void onTextChanged(CharSequence text, int start, int before, int count) {
+        }
+
     }
 
     @Override
@@ -164,15 +248,20 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             String filePath = cursor.getString(columnIndex);
             cursor.close();
 
-
             Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+            String fileName = new File(filePath).getName();
 
-            SpannableString ss = new SpannableString("abc\n");
+            //https://stackoverflow.com/a/4887325/3090120
+            //https://stackoverflow.com/questions/3176033/spannablestring-with-image-example
+            String s = "![" + fileName +"](" + filePath + ")\n";
+            SpannableString ss = new SpannableString(s);
             Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
-            ss.setSpan(span, 0, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            ss.setSpan(span, 0, s.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             editText.append(ss);
+
+            Log.i(TAG, editText.getText().toString());
         }
     }
 }
