@@ -6,7 +6,7 @@ package com.abhiank.opennotes.notelist;
 
 public interface NoteListPresenter {
 
-    void addNewNoteClicked();
+//    void addNewNoteClicked();
 
     void onResume();
 

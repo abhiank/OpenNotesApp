@@ -17,4 +17,6 @@ public interface NoteListView {
     void setNoteListItems(List<Note> noteList);
 
     void showMessage(String message);
+
+    void navigateToAddEditNoteScreen(Note note);
 }

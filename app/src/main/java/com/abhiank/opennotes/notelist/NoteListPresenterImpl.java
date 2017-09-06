@@ -18,11 +18,6 @@ public class NoteListPresenterImpl implements NoteListPresenter {
     }
 
     @Override
-    public void addNewNoteClicked() {
-        noteListView.showMessage("New Note");
-    }
-
-    @Override
     public void onResume() {
         List<Note> notes = new ArrayList<>();
         for(int i=0; i<10; i++){
@@ -39,6 +34,7 @@ public class NoteListPresenterImpl implements NoteListPresenter {
     @Override
     public void onNoteItemClicked(int position) {
         noteListView.showMessage("Note " + position + " clicked");
+        noteListView.navigateToAddEditNoteScreen(new Note("a", "b"));
     }
 
     @Override

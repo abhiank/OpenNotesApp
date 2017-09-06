@@ -1,5 +1,6 @@
 package com.abhiank.opennotes.notelist;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.domain.Note;
+import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 
 import java.util.List;
 
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
 
     @OnClick(R.id.fab)
     public void onFabClicked(){
-        presenter.addNewNoteClicked();
+        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this));
     }
 
     @Override
@@ -116,5 +118,9 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void navigateToAddEditNoteScreen(Note note) {
+        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this, note));
+    }
 
 }

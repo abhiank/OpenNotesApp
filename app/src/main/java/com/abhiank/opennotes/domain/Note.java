@@ -1,13 +1,19 @@
 package com.abhiank.opennotes.domain;
 
+import org.parceler.Parcel;
+
 /**
  * Created by abhimanyu on 06/09/17.
  */
 
+@Parcel
 public class Note {
 
     private String title;
     private String content;
+
+    public Note() {
+    }
 
     public Note(String title, String content) {
         this.title = title;
