@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "426858889030",
+    "firebase_url": "https://opennotes-276a1.firebaseio.com",
+    "project_id": "opennotes-276a1",
+    "storage_bucket": "opennotes-276a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:426858889030:android:f4c05ee460eb5809",
+        "android_client_info": {
+          "package_name": "com.abhiank.opennotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "426858889030-u8ik7f2lvfoupjsep619jd4hgo6jvcd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcyJdE9h6uX7oWuvLC81TRjyYFpJ-xH4M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

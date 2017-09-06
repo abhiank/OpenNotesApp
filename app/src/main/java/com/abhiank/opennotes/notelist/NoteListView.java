@@ -1,6 +1,6 @@
 package com.abhiank.opennotes.notelist;
 
-import com.abhiank.opennotes.domain.Note;
+import com.abhiank.opennotes.data.Note;
 
 import java.util.List;
 

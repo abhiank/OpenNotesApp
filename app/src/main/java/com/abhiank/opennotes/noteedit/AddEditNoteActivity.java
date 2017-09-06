@@ -28,7 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
-import com.abhiank.opennotes.domain.Note;
+import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.utils.Utils;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -52,7 +52,9 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     @BindView(R.id.scroll_view_linear_layout)
     LinearLayout noteLinearLayout;
     @BindView(R.id.note_edit_text)
-    EditText editText;
+    EditText contentEditText;
+    @BindView(R.id.title_edittext)
+    EditText titleEditText;
 
     private static final String TAG = AddEditNoteActivity.class.getSimpleName();
     private static final int IMAGE_PICKER_INTENT_REQUEST_CODE = 0;
@@ -94,9 +96,9 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
         }
         getSupportActionBar().setTitle(title);
 
-        presenter = new AddEditNotePresenterImpl(AddEditNoteActivity.this, note);
+        presenter = new AddEditNotePresenterImpl(AddEditNoteActivity.this, note, getApplicationContext());
 
-        editText.addTextChangedListener(new ImageSpanDeleteHandler(editText));
+        contentEditText.addTextChangedListener(new ImageSpanDeleteHandler(contentEditText));
     }
 
     //https://stackoverflow.com/a/19649371/3090120
@@ -194,7 +196,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
                 return true;
 
             case R.id.save:
-                presenter.saveNote();
+                presenter.saveNote(titleEditText.getText().toString(), contentEditText.getText().toString());
                 return true;
 
             default:
@@ -259,9 +261,9 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
             ss.setSpan(span, 0, s.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            editText.append(ss);
+            contentEditText.append(ss);
 
-            Log.i(TAG, editText.getText().toString());
+            Log.i(TAG, contentEditText.getText().toString());
         }
     }
 }

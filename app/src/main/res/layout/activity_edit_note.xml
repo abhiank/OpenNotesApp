@@ -14,10 +14,17 @@
         android:minHeight="?attr/actionBarSize"
         app:titleTextColor="@android:color/white" />
 
+    <EditText
+        android:id="@+id/title_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="title"
+        android:layout_below="@+id/toolbar"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/title_edittext"
         android:fillViewport="true">
 
         <LinearLayout

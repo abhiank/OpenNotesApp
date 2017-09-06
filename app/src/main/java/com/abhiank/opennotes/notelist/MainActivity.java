@@ -1,6 +1,5 @@
 package com.abhiank.opennotes.notelist;
 
-import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
-import com.abhiank.opennotes.domain.Note;
+import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 
 import java.util.List;
@@ -44,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0)
                     addNewNoteFab.hide();
                 else if (dy < 0)
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
         });
 
 
-        presenter = new NoteListPresenterImpl(this);
+        presenter = new NoteListPresenterImpl(this, getApplicationContext());
     }
 
     @Override
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
     }
 
     @OnClick(R.id.fab)
-    public void onFabClicked(){
+    public void onFabClicked() {
         startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this));
     }
 

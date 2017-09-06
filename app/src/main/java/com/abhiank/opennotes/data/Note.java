@@ -1,14 +1,21 @@
-package com.abhiank.opennotes.domain;
+package com.abhiank.opennotes.data;
+
+import android.support.annotation.NonNull;
 
 import org.parceler.Parcel;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by abhimanyu on 06/09/17.
  */
 
 @Parcel
-public class Note {
+public class Note extends RealmObject {
 
+    @PrimaryKey
+    private String mId;
     private String title;
     private String content;
 
@@ -18,6 +25,15 @@ public class Note {
     public Note(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    @NonNull
+    public String getmId() {
+        return mId;
+    }
+
+    public void setmId(@NonNull String mId) {
+        this.mId = mId;
     }
 
     public String getTitle() {
