@@ -3,6 +3,7 @@ package com.abhiank.opennotes.noteedit;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +26,7 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -63,6 +66,9 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     @BindView(R.id.title_edittext)
     EditText titleEditText;
 
+    private boolean changesMade;
+    private MenuItem attachPhotoMenuItem;
+
     private static final String TAG = AddEditNoteActivity.class.getSimpleName();
     private static final int IMAGE_PICKER_INTENT_REQUEST_CODE = 0;
 
@@ -97,7 +103,22 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
 
         presenter = new AddEditNotePresenterImpl(AddEditNoteActivity.this, noteId, getApplicationContext());
 
-        contentEditText.addTextChangedListener(new ImageSpanDeleteHandler(contentEditText));
+        titleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b && attachPhotoMenuItem != null) {
+                    attachPhotoMenuItem.setVisible(false);
+                }
+            }
+        });
+        contentEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b && attachPhotoMenuItem != null) {
+                    attachPhotoMenuItem.setVisible(true);
+                }
+            }
+        });
     }
 
     @Override
@@ -109,7 +130,40 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_edit_note, menu);
+        attachPhotoMenuItem = menu.findItem(R.id.attach);
+        attachPhotoMenuItem.setVisible(false);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (changesMade) {
+            showChangesMadeSaveDialog();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void showChangesMadeSaveDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle1);
+        builder.setTitle(R.string.save_note_dialog_title);
+        builder.setMessage(R.string.save_note_dialog_message);
+        builder.setPositiveButton(R.string.save_dialog_pos_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                changesMade = false;
+                dialogInterface.dismiss();
+                validateData();
+            }
+        });
+        builder.setNegativeButton(R.string.save_dialog_neg_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                changesMade = false;
+                onBackPressed();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -123,6 +177,13 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             case R.id.save:
                 validateData();
                 return true;
+
+            case android.R.id.home:
+                if (changesMade) {
+                    showChangesMadeSaveDialog();
+                    return true;
+                } else
+                    return false;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -200,6 +261,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
                                     ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
                                     ss.setSpan(span, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                                     contentEditText.setText(ss);
+                                    changesMade = false;
                                 }
                             });
                 } else {
@@ -212,10 +274,14 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             }
             contentEditText.setText(ss);
         }
+
+        contentEditText.addTextChangedListener(new ImageSpanDeleteHandler(contentEditText));
+        titleEditText.addTextChangedListener(titleTextWatcher);
     }
 
     @Override
     public void noteSaved() {
+        changesMade = false;
         onBackPressed();
     }
 
@@ -251,14 +317,31 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
             ss.setSpan(span, 0, s.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            contentEditText.append(ss);
+            contentEditText.getText().insert(contentEditText.getSelectionStart(), ss);
 
             Log.i(TAG, contentEditText.getText().toString());
         }
     }
 
+    TextWatcher titleTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            changesMade = true;
+            titleEditText.removeTextChangedListener(this);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+
     //https://stackoverflow.com/a/19649371/3090120
-    private static class ImageSpanDeleteHandler implements TextWatcher {
+    private class ImageSpanDeleteHandler implements TextWatcher {
 
         private final EditText mEditor;
         private final ArrayList<ImageSpan> mEmoticonsToRemove = new ArrayList<ImageSpan>();
@@ -327,6 +410,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
 
         @Override
         public void onTextChanged(CharSequence text, int start, int before, int count) {
+            changesMade = true;
         }
 
     }
