@@ -58,6 +58,9 @@ dependencies {
     //Not sure why but this is required for Realm and Firebase to work together
     //https://stackoverflow.com/questions/37304365/combine-realm-io-and-firebase
     compile 'io.reactivex:rxjava:1.1.0'
+
+    //Firebase Job Dispather for background updating of Firebase when offline
+    compile 'com.firebase:firebase-jobdispatcher:0.8.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
