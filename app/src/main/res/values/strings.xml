@@ -7,8 +7,8 @@
     <string name="delete_note_negative_button">Cancel</string>
     <string name="note_removed_success_message">Note Removed!</string>
     <string name="storage_permission_denied_message">Storage permission was denied</string>
-    <string name="edit_note_title">Edit Note</string>
-    <string name="create_note_title">Create Note</string>
+    <string name="edit_note_title">Edit</string>
+    <string name="create_note_title">New</string>
     <string name="title_empty_error_message">Title is empty</string>
     <string name="content_field_empty_error_message">Note field is empty</string>
 </resources>

@@ -11,20 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
+        android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         app:titleTextColor="@android:color/white" />
-
-    <EditText
-        android:id="@+id/title_edittext"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:hint="title"
-        android:layout_below="@+id/toolbar"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/title_edittext"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_below="@+id/toolbar"
+        android:background="#F0F0F0"
         android:fillViewport="true">
 
         <LinearLayout
@@ -34,10 +31,27 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/title_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:hint="title"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@android:color/transparent"
+                android:singleLine="true"
+                android:maxLength="30"
+                android:textColor="#292929"
+                android:layout_below="@+id/toolbar"/>
+
+            <EditText
                 android:id="@+id/note_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
+                android:layout_height="match_parent"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:textSize="17sp"
+                android:hint="note.."
+                android:background="@android:color/transparent"
+                android:gravity="top"
                 android:isScrollContainer="false" />
 
         </LinearLayout>
