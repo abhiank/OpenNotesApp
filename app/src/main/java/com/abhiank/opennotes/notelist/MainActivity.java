@@ -14,8 +14,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
+import com.abhiank.opennotes.customview.VerticalSpaceItemDecoration;
 import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
+import com.abhiank.opennotes.utils.Utils;
 
 import java.util.List;
 
@@ -44,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
         getSupportActionBar().setTitle(R.string.note_list_toolbar_title);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration((int) Utils.convertDpToPixel(8, MainActivity.this)));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

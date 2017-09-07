@@ -20,6 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
+        android:clipToPadding="false"
+        android:layoutAnimation="@anim/layout_anim_from_bottom"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
         android:scrollbars="vertical" />
 
     <android.support.design.widget.FloatingActionButton
@@ -28,11 +33,11 @@
         android:layout_height="54dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        app:srcCompat="@drawable/ic_add_black_24dp"
-        app:elevation="6dp"
-        android:tint="@color/white"
-        android:layout_marginRight="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        app:pressedTranslationZ="12dp" />
+        android:layout_marginRight="@dimen/fab_margin"
+        android:tint="@color/white"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </RelativeLayout>
