@@ -27,6 +27,7 @@ public class NotesRemoteDataSource implements NotesDataSource {
     private static final String NOTES_CHILD_REF = "notes";
 
     private NotesRemoteDataSource(Context context) {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 

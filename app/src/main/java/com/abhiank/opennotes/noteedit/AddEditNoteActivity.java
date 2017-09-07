@@ -42,6 +42,8 @@ import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -126,11 +128,11 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     public void validateData() {
 
         if (TextUtils.isEmpty(titleEditText.getText())) {
-            titleEditText.setError("Title is empty");
+            titleEditText.setError(getString(R.string.title_empty_error_message));
             return;
         }
         if (TextUtils.isEmpty(contentEditText.getText())) {
-            contentEditText.setError("Note field is empty");
+            contentEditText.setError(getString(R.string.content_field_empty_error_message));
             return;
         }
         presenter.saveNote(titleEditText.getText().toString(), contentEditText.getText().toString());
@@ -167,7 +169,26 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
         if (note != null) {
             getSupportActionBar().setTitle(R.string.edit_note_title);
             titleEditText.setText(note.getTitle());
-            contentEditText.setText(note.getContent());
+
+            String content = note.getContent();
+
+            SpannableString ss = new SpannableString(content);
+
+            Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
+            while (m.find()) {
+                Log.i("regex", m.group());
+                String s = m.group();
+                String filePath = s.substring(s.indexOf("(") + 1, s.length() - 2);
+                Log.i("filepath", s);
+
+                Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+                Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);
+                d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+                ss.setSpan(span, m.start(), m.end(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+            }
+            contentEditText.setText(ss);
         }
     }
 
@@ -202,7 +223,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
 
             //https://stackoverflow.com/a/4887325/3090120
             //https://stackoverflow.com/questions/3176033/spannablestring-with-image-example
-            String s = "![" + fileName + "](" + filePath + ")\n";
+            String s = "![" + fileName + "](" + filePath + ")!\n";
             SpannableString ss = new SpannableString(s);
             Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());

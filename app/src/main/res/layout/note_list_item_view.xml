@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/note_title_tv__note_list_item"
+        android:maxLines="4"
         android:layout_below="@+id/note_title_tv__note_list_item"
         android:text="Note content preview" />
 
