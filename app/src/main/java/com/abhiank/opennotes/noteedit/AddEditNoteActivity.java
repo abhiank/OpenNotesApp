@@ -115,7 +115,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
                 return true;
 
             case R.id.save:
-                validateData(); 
+                validateData();
                 return true;
 
             default:

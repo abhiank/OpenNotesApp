@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.data.source.local.NotesLocalDataSource;
+import com.abhiank.opennotes.data.source.remote.NotesRemoteDataSource;
 
 import java.util.List;
 
@@ -17,9 +18,11 @@ public class NotesRepository implements NotesDataSource {
     private static NotesRepository INSTANCE = null;
 
     private NotesLocalDataSource notesLocalDataSource;
+    private NotesRemoteDataSource notesRemoteDataSource;
 
     private NotesRepository(Context context) {
         notesLocalDataSource = NotesLocalDataSource.getInstance(context);
+        notesRemoteDataSource = NotesRemoteDataSource.getInstance(context);
     }
 
     public static NotesRepository getInstance(Context context) {
@@ -40,13 +43,26 @@ public class NotesRepository implements NotesDataSource {
 
             @Override
             public void onDataNotAvailable() {
-                //todo get from firebase
+                notesRemoteDataSource.getAllNotes(new LoadAllNotesCallback() {
+                    @Override
+                    public void onNotesLoaded(List<Note> notes) {
+                        for (Note n : notes) {
+                            notesLocalDataSource.saveNote(n);
+                        }
+                        callback.onNotesLoaded(notes);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        callback.onDataNotAvailable();
+                    }
+                });
             }
         });
     }
 
     @Override
-    public void getNote(@NonNull String noteId, @NonNull final GetNoteCallBack callBack) {
+    public void getNote(@NonNull final String noteId, @NonNull final GetNoteCallBack callBack) {
         notesLocalDataSource.getNote(noteId, new GetNoteCallBack() {
             @Override
             public void onNoteLoaded(Note note) {
@@ -55,7 +71,18 @@ public class NotesRepository implements NotesDataSource {
 
             @Override
             public void onDataNotAvailable() {
-                //// TODO: 06/09/17 something
+                notesRemoteDataSource.getNote(noteId, new GetNoteCallBack() {
+                    @Override
+                    public void onNoteLoaded(Note note) {
+                        callBack.onNoteLoaded(note);
+                        notesLocalDataSource.saveNote(note);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        callBack.onDataNotAvailable();
+                    }
+                });
             }
         });
     }
@@ -63,10 +90,12 @@ public class NotesRepository implements NotesDataSource {
     @Override
     public void saveNote(@NonNull Note note) {
         notesLocalDataSource.saveNote(note);
+        notesRemoteDataSource.saveNote(note);
     }
 
     @Override
     public void deleteNote(@NonNull Note note) {
         notesLocalDataSource.deleteNote(note);
+        notesRemoteDataSource.deleteNote(note);
     }
 }
