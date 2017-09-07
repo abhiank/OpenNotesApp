@@ -171,7 +171,6 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             titleEditText.setText(note.getTitle());
 
             String content = note.getContent();
-
             SpannableString ss = new SpannableString(content);
 
             Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
@@ -179,7 +178,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
                 Log.i("regex", m.group());
                 String s = m.group();
                 String filePath = s.substring(s.indexOf("(") + 1, s.length() - 2);
-                Log.i("filepath", s);
+                Log.i("filepath", filePath);
 
                 Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
                 Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);

@@ -53,7 +53,8 @@ dependencies {
     compile 'com.karumi:dexter:4.1.0'
 
     //Firebase
-    compile 'com.google.firebase:firebase-database:11.2.0'
+    compile 'com.google.firebase:firebase-database:11.2.2'
+    compile 'com.google.firebase:firebase-storage:11.2.2'
 
     //Not sure why but this is required for Realm and Firebase to work together
     //https://stackoverflow.com/questions/37304365/combine-realm-io-and-firebase
