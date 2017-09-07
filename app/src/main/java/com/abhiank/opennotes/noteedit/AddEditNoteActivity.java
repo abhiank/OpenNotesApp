@@ -24,6 +24,7 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -31,6 +32,9 @@ import android.widget.Toast;
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.data.Note;
 import com.abhiank.opennotes.utils.Utils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -171,21 +175,40 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
             titleEditText.setText(note.getTitle());
 
             String content = note.getContent();
-            SpannableString ss = new SpannableString(content);
+            final SpannableString ss = new SpannableString(content);
 
-            Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
+            final Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
             while (m.find()) {
                 Log.i("regex", m.group());
                 String s = m.group();
                 String filePath = s.substring(s.indexOf("(") + 1, s.length() - 2);
                 Log.i("filepath", filePath);
 
-                Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
-                Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);
-                d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-                ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
-                ss.setSpan(span, m.start(), m.end(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                if (URLUtil.isNetworkUrl(filePath)) {
 
+                    final int start = m.start();
+                    final int end = m.end();
+
+                    Glide.with(AddEditNoteActivity.this)
+                            .asBitmap()
+                            .load(filePath)
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                    Drawable d = new BitmapDrawable(getResources(), resource);
+                                    d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                                    ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+                                    ss.setSpan(span, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                                    contentEditText.setText(ss);
+                                }
+                            });
+                } else {
+                    Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+                    Drawable d = new BitmapDrawable(getResources(), yourSelectedImage);
+                    d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                    ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+                    ss.setSpan(span, m.start(), m.end(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             }
             contentEditText.setText(ss);
         }

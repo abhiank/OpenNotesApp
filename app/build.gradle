@@ -59,6 +59,10 @@ dependencies {
     //Not sure why but this is required for Realm and Firebase to work together
     //https://stackoverflow.com/questions/37304365/combine-realm-io-and-firebase
     compile 'io.reactivex:rxjava:1.1.0'
+
+    //Glide for loading images stored in Firebase
+    compile 'com.github.bumptech.glide:glide:4.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
