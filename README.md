@@ -26,10 +26,10 @@ When offline, all the notes are stored to Realm. When internet returns, the data
 * [Glide](https://github.com/bumptech/glide) - For awesome image downloading and maneging
 * RecyclerView, CardView, DesignSupportLib
 
-###Architecture
+### Architecture
 
 For architecture, this app uses MVP for the presentation layer, inspired from the code from this project - [Android MVP](https://github.com/antoniolg/androidmvp).  
 For the data layer, used the patter as used in this project - [Google Architecture Blueprints](https://github.com/googlesamples/android-architecture/tree/todo-mvp).
 
 
-#####Download the apk and try the app from [here](https://drive.google.com/file/d/0B5LjCPtBx296VDk2YzktSVFFMU0/view?usp=sharing).
+##### Download the apk and try the app from [here](https://drive.google.com/file/d/0B5LjCPtBx296VDk2YzktSVFFMU0/view?usp=sharing).
