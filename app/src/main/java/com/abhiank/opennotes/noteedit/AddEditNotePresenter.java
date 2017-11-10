@@ -1,7 +1,5 @@
 package com.abhiank.opennotes.noteedit;
 
-import com.abhiank.opennotes.data.Note;
-
 /**
  * Created by abhimanyu on 06/09/17.
  */

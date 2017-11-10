@@ -33,7 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -44,8 +44,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-
-import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;

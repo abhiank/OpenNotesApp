@@ -2,7 +2,7 @@ package com.abhiank.opennotes.noteedit;
 
 import android.content.Context;
 
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.data.source.NotesDataSource;
 import com.abhiank.opennotes.data.source.NotesRepository;
 

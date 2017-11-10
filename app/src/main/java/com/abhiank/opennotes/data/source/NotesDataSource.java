@@ -2,7 +2,7 @@ package com.abhiank.opennotes.data.source;
 
 import android.support.annotation.NonNull;
 
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 
 import java.util.List;
 
@@ -32,5 +32,5 @@ public interface NotesDataSource {
 
     void saveNote(@NonNull Note note);
 
-    void deleteNote(@NonNull Note note);
+    void deleteNote(@NonNull String noteId);
 }

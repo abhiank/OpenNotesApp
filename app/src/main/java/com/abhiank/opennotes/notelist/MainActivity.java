@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.customview.VerticalSpaceItemDecoration;
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 import com.abhiank.opennotes.utils.Utils;
 
@@ -25,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements NoteListView {
+public class MainActivity extends AppCompatActivity implements NoteListContract.NoteListView {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
     @BindView(R.id.fab)
     FloatingActionButton addNewNoteFab;
 
-    private NoteListPresenter presenter;
+    private NoteListContract.NoteListPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +57,13 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
             }
         });
 
-
-        presenter = new NoteListPresenterImpl(this, getApplicationContext());
+        presenter = new NoteListPresenter(this, getApplicationContext());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.onResume();
+        presenter.onStart();
     }
 
     @Override
@@ -101,54 +99,44 @@ public class MainActivity extends AppCompatActivity implements NoteListView {
     }
 
     @Override
-    public void setNoteListItems(List<Note> noteList) {
+    public void showNoteListItems(List<Note> noteList) {
 
         NoteListAdapter noteListAdapter = new NoteListAdapter(noteList, new NoteListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                presenter.onNoteItemClicked(position);
+            public void onItemClick(String noteId) {
+                presenter.onNoteItemClicked(noteId);
             }
 
             @Override
-            public void onItemDeleteClick(int position) {
-                showNoteDeletionDialog(position);
+            public void onItemDeleteClick(String noteId) {
+                showNoteDeletionDialog(noteId);
             }
         });
         recyclerView.setAdapter(noteListAdapter);
     }
 
-    public void showNoteDeletionDialog(final int position) {
+    public void showNoteDeletionDialog(String noteId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
         builder.setTitle(R.string.delete_note_dialog_title);
         builder.setMessage(R.string.delete_note_dialog_message);
-        builder.setPositiveButton(R.string.delete_note_pos_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                presenter.onNoteItemRemoveClicked(position);
-            }
-        });
-        builder.setNegativeButton(R.string.delete_note_negative_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setPositiveButton(R.string.delete_note_pos_button, (dialogInterface, i) -> presenter.onNoteItemRemoveClicked(noteId));
+        builder.setNegativeButton(R.string.delete_note_negative_button, (dialogInterface, i) -> dialogInterface.dismiss());
         builder.show();
     }
 
     @Override
-    public void showMessage(String message) {
+    public void showErrorMessage(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void navigateToAddEditNoteScreen(Note note) {
+    public void showNote(Note note) {
         startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this, note.getmId()));
     }
 
     @Override
-    public void noteRemoved(int position) {
-        recyclerView.getAdapter().notifyItemRemoved(position);
+    public void removeNoteFromList(String noteId) { 
+        ((NoteListAdapter)recyclerView.getAdapter()).removeNoteFromList(noteId);
         Toast.makeText(MainActivity.this, R.string.note_removed_success_message, Toast.LENGTH_SHORT).show();
     }
 

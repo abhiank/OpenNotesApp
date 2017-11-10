@@ -1,4 +1,4 @@
-package com.abhiank.opennotes.data;
+package com.abhiank.opennotes.data.model;
 
 import android.support.annotation.NonNull;
 
@@ -15,9 +15,9 @@ import io.realm.annotations.PrimaryKey;
 public class Note extends RealmObject {
 
     @PrimaryKey
-    private String mId;
-    private String title;
-    private String content;
+    String mId;
+    String title;
+    String content;
 
     public Note() {
     }
@@ -25,6 +25,15 @@ public class Note extends RealmObject {
     public Note(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Note){
+            Note note = (Note) obj;
+            return note.getmId().equals(this.getmId());
+        }
+        else return false;
     }
 
     @NonNull

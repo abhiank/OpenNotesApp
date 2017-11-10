@@ -1,18 +1,12 @@
 package com.abhiank.opennotes.data.source.remote;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.text.Spannable;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.webkit.URLUtil;
 
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.data.source.NotesDataSource;
 import com.abhiank.opennotes.data.source.local.NotesLocalDataSource;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -116,20 +110,15 @@ public class NotesRemoteDataSource implements NotesDataSource {
                 UploadTask uploadTask = riversRef.putFile(file);
 
                 // Register observers to listen for when the download is done or if it fails
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        mDatabase.child(NOTES_CHILD_REF).child(note.getmId()).setValue(note);
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        note.setContent(note.getContent().replace(filePath, downloadUrl.toString()));
-                        mDatabase.child(NOTES_CHILD_REF).child(note.getmId()).setValue(note);
-                        notesLocalDataSource.saveNote(note);
-                    }
-                });
+                uploadTask
+                        .addOnFailureListener(exception ->
+                                mDatabase.child(NOTES_CHILD_REF).child(note.getmId()).setValue(note))
+                        .addOnSuccessListener(taskSnapshot -> {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            note.setContent(note.getContent().replace(filePath, downloadUrl.toString()));
+                            mDatabase.child(NOTES_CHILD_REF).child(note.getmId()).setValue(note);
+                            notesLocalDataSource.saveNote(note);
+                        });
             }
         }
 
@@ -137,21 +126,33 @@ public class NotesRemoteDataSource implements NotesDataSource {
     }
 
     @Override
-    public void deleteNote(@NonNull Note note) {
-        mDatabase.child(NOTES_CHILD_REF).child(note.getmId()).removeValue();
+    public void deleteNote(@NonNull String noteId) {
+        //Removing the photos attached in the note
+        getNote(noteId, new GetNoteCallBack() {
+            @Override
+            public void onNoteLoaded(Note note) {
+                String content = note.getContent();
+                Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
+                while (m.find()) {
+                    Log.i("regex", m.group());
+                    String s = m.group();
+                    final String filePath = s.substring(s.indexOf("(") + 1, s.length() - 2);
+                    Log.i("filepath", filePath);
 
-        String content = note.getContent();
-        Matcher m = Pattern.compile("!\\[[^\\]]+\\]\\([^!]+\\)\\!").matcher(content);
-        while (m.find()) {
-            Log.i("regex", m.group());
-            String s = m.group();
-            final String filePath = s.substring(s.indexOf("(") + 1, s.length() - 2);
-            Log.i("filepath", filePath);
+                    if (URLUtil.isNetworkUrl(filePath)) {
+                        StorageReference fileRef = storage.getReferenceFromUrl(filePath);
+                        fileRef.delete();
+                    }
+                }
 
-            if (URLUtil.isNetworkUrl(filePath)) {
-                StorageReference fileRef = storage.getReferenceFromUrl(filePath);
-                fileRef.delete();
+                mDatabase.child(NOTES_CHILD_REF).child(noteId).removeValue();
             }
-        }
+
+            @Override
+            public void onDataNotAvailable() {
+                //Note content could not be deleted
+            }
+        });
+
     }
 }

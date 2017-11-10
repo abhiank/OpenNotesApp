@@ -3,7 +3,7 @@ package com.abhiank.opennotes.data.source;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.data.source.local.NotesLocalDataSource;
 import com.abhiank.opennotes.data.source.remote.NotesRemoteDataSource;
 
@@ -94,8 +94,8 @@ public class NotesRepository implements NotesDataSource {
     }
 
     @Override
-    public void deleteNote(@NonNull Note note) {
-        notesLocalDataSource.deleteNote(note);
-        notesRemoteDataSource.deleteNote(note);
+    public void deleteNote(@NonNull String noteId) {
+        notesLocalDataSource.deleteNote(noteId);
+        notesRemoteDataSource.deleteNote(noteId);
     }
 }

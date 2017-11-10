@@ -3,10 +3,9 @@ package com.abhiank.opennotes.data.source.local;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.data.source.NotesDataSource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -61,9 +60,9 @@ public class NotesLocalDataSource implements NotesDataSource {
     }
 
     @Override
-    public void deleteNote(@NonNull Note note) {
+    public void deleteNote(@NonNull String noteId) {
         realm.beginTransaction();
-        Note note1 = realm.where(Note.class).equalTo("mId", note.getmId()).findFirst();
+        Note note1 = realm.where(Note.class).equalTo("mId", noteId).findFirst();
         if (note1 != null) {
             note1.deleteFromRealm();
         }

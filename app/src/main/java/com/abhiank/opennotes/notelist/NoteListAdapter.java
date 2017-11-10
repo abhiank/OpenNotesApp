@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.abhiank.opennotes.R;
-import com.abhiank.opennotes.data.Note;
+import com.abhiank.opennotes.data.model.Note;
 
 import java.util.List;
 
@@ -44,19 +44,10 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
         holder.noteContentTextView.setText(note.getContent());
         holder.noteTitleTextView.setText(note.getTitle());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                itemClickListener.onItemClick(holder.getAdapterPosition());
-            }
-        });
-
-        holder.deleteNoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                itemClickListener.onItemDeleteClick(holder.getAdapterPosition());
-            }
-        });
+        holder.itemView.setOnClickListener(view ->
+                itemClickListener.onItemClick(note.getmId()));
+        holder.deleteNoteButton.setOnClickListener(view ->
+                itemClickListener.onItemDeleteClick(note.getmId()));
     }
 
     @Override
@@ -79,12 +70,22 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
         }
     }
 
+    public void removeNoteFromList(String noteId) {
+        Note note = new Note();
+        note.setmId(noteId);
+        int pos = noteList.indexOf(note);
+        noteList.remove(pos);//Todo fix this. This should not be the responsibility of the adapter
+        if (pos != -1) {
+            notifyItemRemoved(pos);
+            notifyItemRangeChanged(pos, noteList.size());
+        }
+    }
 
     public interface OnItemClickListener {
 
-        void onItemClick(int position);
+        void onItemClick(String noteId);
 
-        void onItemDeleteClick(int position);
+        void onItemDeleteClick(String noteId);
     }
 
 }
