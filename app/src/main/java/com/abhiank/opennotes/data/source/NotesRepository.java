@@ -9,29 +9,24 @@ import com.abhiank.opennotes.data.source.remote.NotesRemoteDataSource;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by abhimanyu on 06/09/17.
  */
 
+@Singleton
 public class NotesRepository implements NotesDataSource {
-
-    private static NotesRepository INSTANCE = null;
 
     private NotesLocalDataSource notesLocalDataSource;
     private NotesRemoteDataSource notesRemoteDataSource;
 
-    private NotesRepository(Context context) {
-        notesLocalDataSource = NotesLocalDataSource.getInstance(context);
-        notesRemoteDataSource = NotesRemoteDataSource.getInstance(context);
+    @Inject
+    public NotesRepository(NotesLocalDataSource notesLocalDataSource, NotesRemoteDataSource notesRemoteDataSource) {
+        this.notesLocalDataSource = notesLocalDataSource;
+        this.notesRemoteDataSource = notesRemoteDataSource;
     }
-
-    public static NotesRepository getInstance(Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new NotesRepository(context);
-        }
-        return INSTANCE;
-    }
-
 
     @Override
     public void getAllNotes(@NonNull final LoadAllNotesCallback callback) {

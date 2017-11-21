@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface NoteListContract {
 
-    interface NoteListPresenter {
+    interface Presenter {
 
 //    void addNewNoteClicked();
 
@@ -21,9 +21,11 @@ public interface NoteListContract {
         void onNoteItemClicked(String noteId);
 
         void onNoteItemRemoveClicked(String noteId);
+
+        void attachView(NoteListContract.View view);
     }
 
-    interface NoteListView {
+    interface View {
 
         void showProgress();
 

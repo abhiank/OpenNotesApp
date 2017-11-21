@@ -5,8 +5,11 @@ import android.support.annotation.NonNull;
 
 import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.data.source.NotesDataSource;
+import com.abhiank.opennotes.injection.customannotations.ApplicationContext;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.realm.Realm;
 
@@ -16,19 +19,12 @@ import io.realm.Realm;
 
 public class NotesLocalDataSource implements NotesDataSource {
 
-    private static NotesLocalDataSource INSTANCE = null;
     private Realm realm;
 
-    private NotesLocalDataSource(@NonNull Context context) {
+    @Inject
+    public NotesLocalDataSource(Context context) {
         Realm.init(context);
         realm = Realm.getDefaultInstance();
-    }
-
-    public static NotesLocalDataSource getInstance(@NonNull Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new NotesLocalDataSource(context);
-        }
-        return INSTANCE;
     }
 
     @Override

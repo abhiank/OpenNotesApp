@@ -27,33 +27,28 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by abhimanyu on 06/09/17.
  */
 
 public class NotesRemoteDataSource implements NotesDataSource {
 
-    private static NotesRemoteDataSource INSTANCE = null;
     private DatabaseReference mDatabase;
     private FirebaseStorage storage;
     private NotesLocalDataSource notesLocalDataSource;
 
     private static final String NOTES_CHILD_REF = "notes";
 
-    private NotesRemoteDataSource(Context context) {
+    @Inject
+    public NotesRemoteDataSource(NotesLocalDataSource notesLocalDataSource) {
+        this.notesLocalDataSource = notesLocalDataSource;
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        notesLocalDataSource = NotesLocalDataSource.getInstance(context);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
     }
-
-    public static NotesRemoteDataSource getInstance(Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new NotesRemoteDataSource(context);
-        }
-        return INSTANCE;
-    }
-
 
     @Override
     public void getAllNotes(@NonNull final LoadAllNotesCallback callback) {

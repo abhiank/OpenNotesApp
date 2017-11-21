@@ -1,9 +1,7 @@
 package com.abhiank.opennotes.notelist;
 
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.abhiank.opennotes.BaseActivity;
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.customview.VerticalSpaceItemDecoration;
 import com.abhiank.opennotes.data.model.Note;
@@ -20,11 +19,13 @@ import com.abhiank.opennotes.utils.Utils;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements NoteListContract.NoteListView {
+public class NoteListActivity extends BaseActivity implements NoteListContract.View {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -33,20 +34,23 @@ public class MainActivity extends AppCompatActivity implements NoteListContract.
     @BindView(R.id.fab)
     FloatingActionButton addNewNoteFab;
 
-    private NoteListContract.NoteListPresenter presenter;
+    @Inject
+    public NoteListContract.Presenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getActivityComponent().inject(this);
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.note_list_toolbar_title);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-//        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration((int) Utils.convertDpToPixel(8, MainActivity.this)));
+        recyclerView.setLayoutManager(new LinearLayoutManager(NoteListActivity.this));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(NoteListActivity.this, LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration((int) Utils.convertDpToPixel(8, NoteListActivity.this)));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NoteListContract.
             }
         });
 
-        presenter = new NoteListPresenter(this, getApplicationContext());
+        presenter.attachView(this);
     }
 
     @Override
@@ -85,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NoteListContract.
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this));
+        startActivity(AddEditNoteActivity.getActivityIntent(NoteListActivity.this));
     }
 
     @Override
@@ -126,18 +130,18 @@ public class MainActivity extends AppCompatActivity implements NoteListContract.
 
     @Override
     public void showErrorMessage(String message) {
-        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(NoteListActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showNote(Note note) {
-        startActivity(AddEditNoteActivity.getActivityIntent(MainActivity.this, note.getmId()));
+        startActivity(AddEditNoteActivity.getActivityIntent(NoteListActivity.this, note.getmId()));
     }
 
     @Override
-    public void removeNoteFromList(String noteId) { 
-        ((NoteListAdapter)recyclerView.getAdapter()).removeNoteFromList(noteId);
-        Toast.makeText(MainActivity.this, R.string.note_removed_success_message, Toast.LENGTH_SHORT).show();
+    public void removeNoteFromList(String noteId) {
+        ((NoteListAdapter) recyclerView.getAdapter()).removeNoteFromList(noteId);
+        Toast.makeText(NoteListActivity.this, R.string.note_removed_success_message, Toast.LENGTH_SHORT).show();
     }
 
 }

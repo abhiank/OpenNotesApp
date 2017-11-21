@@ -3,7 +3,6 @@ package com.abhiank.opennotes.noteedit;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -26,12 +25,12 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.abhiank.opennotes.BaseActivity;
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.utils.Utils;
@@ -50,19 +49,17 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AddEditNoteActivity extends AppCompatActivity implements AddEditNoteView {
+public class AddEditNoteActivity extends BaseActivity implements AddEditNoteContract.View {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.scroll_view_linear_layout)
-    LinearLayout noteLinearLayout;
-    @BindView(R.id.note_edit_text)
-    EditText contentEditText;
-    @BindView(R.id.title_edittext)
-    EditText titleEditText;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.scroll_view_linear_layout) LinearLayout noteLinearLayout;
+    @BindView(R.id.note_edit_text) EditText contentEditText;
+    @BindView(R.id.title_edittext) EditText titleEditText;
 
     private boolean changesMade;
     private MenuItem attachPhotoMenuItem;
@@ -70,7 +67,8 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     private static final String TAG = AddEditNoteActivity.class.getSimpleName();
     private static final int IMAGE_PICKER_INTENT_REQUEST_CODE = 0;
 
-    private AddEditNotePresenterImpl presenter;
+    @Inject
+    AddEditNoteContract.Presenter presenter;
 
     private static final String NOTE_ID_INTENT_EXTRA_TAG = "note_id";
 
@@ -88,7 +86,7 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
-
+        getActivityComponent().inject(this);
         ButterKnife.bind(AddEditNoteActivity.this);
 
         String noteId = null;
@@ -99,22 +97,17 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
         getSupportActionBar().setTitle(R.string.create_note_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new AddEditNotePresenterImpl(AddEditNoteActivity.this, noteId, getApplicationContext());
+        presenter.attachView(this);
+        presenter.getNote(noteId);
 
-        titleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b && attachPhotoMenuItem != null) {
-                    attachPhotoMenuItem.setVisible(false);
-                }
+        titleEditText.setOnFocusChangeListener((view, b) -> {
+            if (b && attachPhotoMenuItem != null) {
+                attachPhotoMenuItem.setVisible(false);
             }
         });
-        contentEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b && attachPhotoMenuItem != null) {
-                    attachPhotoMenuItem.setVisible(true);
-                }
+        contentEditText.setOnFocusChangeListener((view, b) -> {
+            if (b && attachPhotoMenuItem != null) {
+                attachPhotoMenuItem.setVisible(true);
             }
         });
     }
@@ -146,20 +139,14 @@ public class AddEditNoteActivity extends AppCompatActivity implements AddEditNot
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle1);
         builder.setTitle(R.string.save_note_dialog_title);
         builder.setMessage(R.string.save_note_dialog_message);
-        builder.setPositiveButton(R.string.save_dialog_pos_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                changesMade = false;
-                dialogInterface.dismiss();
-                validateData();
-            }
+        builder.setPositiveButton(R.string.save_dialog_pos_button, (dialogInterface, i) -> {
+            changesMade = false;
+            dialogInterface.dismiss();
+            validateData();
         });
-        builder.setNegativeButton(R.string.save_dialog_neg_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                changesMade = false;
-                onBackPressed();
-            }
+        builder.setNegativeButton(R.string.save_dialog_neg_button, (dialogInterface, i) -> {
+            changesMade = false;
+            onBackPressed();
         });
         builder.show();
     }

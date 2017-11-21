@@ -8,18 +8,20 @@ import com.abhiank.opennotes.data.source.NotesRepository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by abhimanyu on 06/09/17.
  */
 
-public class NoteListPresenter implements NoteListContract.NoteListPresenter {
+public class NoteListPresenter implements NoteListContract.Presenter {
 
-    private NoteListContract.NoteListView noteListView;
-    private NotesRepository notesRepository;
+    private NotesDataSource notesRepository;
+    private NoteListContract.View noteListView;
 
-    public NoteListPresenter(NoteListContract.NoteListView noteListView, Context context) {
-        this.noteListView = noteListView;
-        notesRepository = NotesRepository.getInstance(context);
+    @Inject
+    public NoteListPresenter(NotesRepository notesRepository) {
+        this.notesRepository = notesRepository;
     }
 
     @Override
@@ -61,6 +63,11 @@ public class NoteListPresenter implements NoteListContract.NoteListPresenter {
     public void onNoteItemRemoveClicked(String noteId) {
         notesRepository.deleteNote(noteId);
         noteListView.removeNoteFromList(noteId);
+    }
+
+    @Override
+    public void attachView(NoteListContract.View view) {
+        this.noteListView = view;
     }
 
 }
