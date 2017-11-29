@@ -16,6 +16,7 @@ import com.abhiank.opennotes.customview.VerticalSpaceItemDecoration;
 import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 import com.abhiank.opennotes.utils.Utils;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.util.List;
 
@@ -44,6 +45,10 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
 
         getActivityComponent().inject(this);
         ButterKnife.bind(this);
+
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(this, "2d9f1e52637fbe58152b55a7fd020a69");
+
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.note_list_toolbar_title);
