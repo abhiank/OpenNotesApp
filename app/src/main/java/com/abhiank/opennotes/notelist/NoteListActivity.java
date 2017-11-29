@@ -16,6 +16,7 @@ import com.abhiank.opennotes.customview.VerticalSpaceItemDecoration;
 import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 import com.abhiank.opennotes.utils.Utils;
+import com.uxcam.UXCam;
 
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
 
         getActivityComponent().inject(this);
         ButterKnife.bind(this);
+
+        UXCam.startWithKey("b9d8aaa679a4280");
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.note_list_toolbar_title);

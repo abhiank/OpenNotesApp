@@ -33,6 +33,12 @@ android {
     }
 }
 
+repositories {
+    maven{
+        url 'http://sdk.uxcam.com/android/'
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -73,6 +79,8 @@ dependencies {
     //Glide for loading images stored in Firebase
     implementation 'com.github.bumptech.glide:glide:4.2.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+
+    compile 'com.uxcam:uxcam:2.6.2@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'
