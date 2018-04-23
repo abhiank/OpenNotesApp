@@ -82,7 +82,7 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.note_search , menu);
+        inflater.inflate(R.menu.menu_main , menu);
         MenuItem item = menu.findItem(R.id.noteSearch);
         SearchView searchView = (SearchView)item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
