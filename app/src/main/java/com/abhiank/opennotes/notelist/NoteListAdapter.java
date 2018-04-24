@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.abhiank.opennotes.R;
 import com.abhiank.opennotes.data.model.Note;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,6 +55,17 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteVi
     public int getItemCount() {
         return noteList.size();
     }
+
+    /*Setting filter on View */
+    //start
+
+    public void getfilter(List<Note> notes){
+        noteList = new ArrayList<>();
+        noteList.addAll(notes);
+        notifyDataSetChanged();
+    }
+
+    //end
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
 

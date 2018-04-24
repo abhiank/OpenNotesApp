@@ -1,13 +1,15 @@
 package com.abhiank.opennotes.notelist;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.abhiank.opennotes.BaseActivity;
@@ -17,6 +19,7 @@ import com.abhiank.opennotes.data.model.Note;
 import com.abhiank.opennotes.noteedit.AddEditNoteActivity;
 import com.abhiank.opennotes.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +36,8 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
     RecyclerView recyclerView;
     @BindView(R.id.fab)
     FloatingActionButton addNewNoteFab;
+    NoteListAdapter noteListAdapter;
+    List<Note> searchList;
 
     @Inject
     public NoteListContract.Presenter presenter;
@@ -64,18 +69,65 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
         presenter.attachView(this);
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
         presenter.onStart();
     }
+    /*Adding Search to the Action bar*/
 
+    //start
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main , menu);
+        MenuItem item = menu.findItem(R.id.noteSearch);
+        SearchView searchView = (SearchView)item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(!searchView.isIconified()){
+                    searchView.setIconified(true);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<Note> notes = searchList;
+                List<Note> filteredNoteList = filter(notes,newText.toLowerCase());
+                noteListAdapter.getfilter(filteredNoteList);
+                return true;
+            }
+        });
+
         return true;
     }
 
+    //end
+
+    //Filter from title and content
+    private List<Note> filter(List<Note> notes, String query){
+        List<Note> filteredNoteList = new ArrayList<>();
+        for(Note model  : notes){
+            String title = model.getTitle().toLowerCase();
+            String content = model.getContent().toLowerCase();
+            if(title.startsWith(query)){
+                filteredNoteList.add(model);
+            }
+            else if(title.contains(query)){
+                filteredNoteList.add(model);
+            }
+            else if(content.contains(query)){
+                filteredNoteList.add(model);
+            }
+        }
+        return filteredNoteList;
+    }
+
+    //end
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -105,7 +157,8 @@ public class NoteListActivity extends BaseActivity implements NoteListContract.V
     @Override
     public void showNoteListItems(List<Note> noteList) {
 
-        NoteListAdapter noteListAdapter = new NoteListAdapter(noteList, new NoteListAdapter.OnItemClickListener() {
+        searchList = noteList;
+        noteListAdapter = new NoteListAdapter(noteList, new NoteListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(String noteId) {
                 presenter.onNoteItemClicked(noteId);
